@@ -5,33 +5,38 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
 
-      - name: Run tests
-        run: |
-          ls
-          python --version
-          pytest -v
+    - name: Run tests
+      run: |
+        pytest
 
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+    needs: test   # run only if tests pass
 
-      - name: Build Docker image
-        run: |
-          docker build -t flaskapp .
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Build Docker image
+      run: |
+        docker build -t flaskapp .
+
+  
